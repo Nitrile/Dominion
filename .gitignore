@@ -1,0 +1,8 @@
+# Main gitignore
+
+# Swap format for Vi
+*.swp
+
+# Build directories
+bin
+bin_debug
