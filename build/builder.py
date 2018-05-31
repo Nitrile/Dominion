@@ -12,8 +12,9 @@ group_invoke = parser.add_mutually_exclusive_group()
 group_invoke.add_argument("-t", "--test",
                           action="store_true",
                           help="Execute test")
-group_invoke.add_argument("-b", "--build",
-                          action="store_true",
+group_invoke.add_argument("-b", "--build", # Supply a list of targets to build
+                          default=False,
+                          nargs='*',
                           help="Build project")
 group_invoke.add_argument("-p", "--proj",
                           action="store_true",
@@ -77,7 +78,8 @@ if args.proj:
     if status != 0:
         print("CMake Configure Failed")
         sys.exit(status)
-elif args.build:
+elif args.build != False:
+    print("Build: " + str(args.build))
     if not os.path.exists(CMAKE_DIR):
         print("CMake build directory does not exist.\n"
               "Please configure project.\n"
