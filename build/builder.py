@@ -48,6 +48,7 @@ if CMAKE_BUILD_TYPE == "Exp":
 if args.proj:
     print("Base Directory: " + BASE_DIR)
 
+    # Ensure directories exist
     try:
         os.makedirs(BINARY_DIR, exist_ok=True)
         os.makedirs(BINARY_APP_DIR, exist_ok=True)
@@ -67,6 +68,7 @@ if args.proj:
     assert os.path.exists(BINARY_DIR + "/deploy")
     assert os.path.exists(BINARY_DIR + "/build")
 
+    # Change directory and form command
     os.chdir(BINARY_DIR + "/build")
 
     CMAKE_COMMAND = ["cmake", "../..",
@@ -79,19 +81,25 @@ if args.proj:
         print("CMake Configure Failed")
         sys.exit(status)
 elif args.build != False:
-    print("Build: " + str(args.build))
+    # Ensure path exists
     if not os.path.exists(CMAKE_DIR):
         print("CMake build directory does not exist.\n"
               "Please configure project.\n"
              )
         sys.exit(1)
     os.chdir(BASE_DIR)
-    print("Building in: " + CMAKE_DIR)
-    CMAKE_COMMAND = ["cmake",
-                     "--build", CMAKE_DIR,
-                     "--config", CMAKE_BUILD_TYPE
-                    ]
-    status = subprocess.call(CMAKE_COMMAND)
+
+    # Form the command
+    command = ["cmake",
+               "--build", CMAKE_DIR,
+               "--config", CMAKE_BUILD_TYPE
+              ]
+    for target in args.build:
+        command += ["--target", target]
+    print("Building... $ " + str(command))
+
+    # Call cmake
+    status = subprocess.call(command)
     if status != 0:
         print("CMake Failed")
         sys.exit(status)
