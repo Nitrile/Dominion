@@ -1,7 +1,7 @@
 project(Server)
 
 set(source
-	main.c++
+	main.cpp
 	)
 
 add_executable(Server ${source})
