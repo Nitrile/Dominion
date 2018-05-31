@@ -20,12 +20,16 @@ group_invoke.add_argument("-p", "--proj",
                           help="Configure project")
 group_invoke.add_argument("-c", "--clean",
                           action="store_true",
-                          help="Clean")
+                          help="Clean (If a level is not specified then it cleans all of them)")
 
 # Options
-parser.add_argument("-l", "--level", type=str,
-                    choices=["Debug", "Exp", "Release"], default = "Debug",
+LEVELS = ["Debug", "Exp", "Release"]
+parser.add_argument("-l", "--level",
+                    type=str, choices = LEVELS, default = "Debug",
                     help = "Build Type")
+parser.add_argument("-g", "--generator",
+                    type=str, default = "",
+                    help = "Project Generator")
 args = parser.parse_args()
 
 # Process arguments
@@ -50,6 +54,8 @@ if args.proj:
         os.makedirs(BINARY_DIR + "/deploy", exist_ok=True)
         os.makedirs(BINARY_DIR + "/build", exist_ok=True)
 
+        if os.path.exists(BASE_DIR + "/bin"):
+            os.remove(BASE_DIR + "/bin") # Should be a symlink
         os.symlink(BINARY_DIR, BASE_DIR + "/bin")
     except OSError as e:
         raise
@@ -65,9 +71,11 @@ if args.proj:
     CMAKE_COMMAND = ["cmake", "../..",
                      "-DCMAKE_BUILD_TYPE="+CMAKE_BUILD_TYPE
                     ]
+    if args.generator != "":
+        CMAKE_COMMAND += ["-G", args.generator]
     status = subprocess.call(CMAKE_COMMAND)
     if status != 0:
-        print("CMake Failed")
+        print("CMake Configure Failed")
         sys.exit(status)
 elif args.build:
     if not os.path.exists(CMAKE_DIR):
@@ -89,9 +97,12 @@ elif args.test:
     print("Test not implemented yet")
     sys.exit(1)
 elif args.clean:
-    os.remove(BASE_DIR + "/bin") # Should be a symlink
-    status = subprocess.call(["rm", "-r", BINARY_DIR])
-    sys.exit(status)
+    if os.path.exists(BASE_DIR + "/bin"):
+        os.remove(BASE_DIR + "/bin") # Should be a symlink
+    for l in LEVELS:
+        path = BASE_DIR + "/bin_" + l.lower()
+        if os.path.exists(path):
+            subprocess.call(["rm", "-r", path])
 else:
     print("No invocation specified. $ builder -h to see available options. Exit.")
     sys.exit(1)

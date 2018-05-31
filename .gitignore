@@ -6,3 +6,5 @@
 # Build directories
 bin
 bin_debug
+bin_exp
+bin_release
