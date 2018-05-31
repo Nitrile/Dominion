@@ -10,18 +10,19 @@ group_invoke = parser.add_mutually_exclusive_group()
 
 # Invocation types
 group_invoke.add_argument("-t", "--test",
-                          action="store_true",
-                          help="Execute test")
-group_invoke.add_argument("-b", "--build", # Supply a list of targets to build
                           default=False,
                           nargs='*',
-                          help="Build project")
+                          help="Execute test (If no target then test all)")
+group_invoke.add_argument("-b", "--build",
+                          default=False,
+                          nargs='*',
+                          help="Build project (If no target then build all)")
 group_invoke.add_argument("-p", "--proj",
                           action="store_true",
                           help="Configure project")
 group_invoke.add_argument("-c", "--clean",
                           action="store_true",
-                          help="Clean (If a level is not specified then it cleans all of them)")
+                          help="Clean (If no level then cleans all)")
 
 # Options
 LEVELS = ["Debug", "Exp", "Release"]
@@ -80,6 +81,7 @@ if args.proj:
     if status != 0:
         print("CMake Configure Failed")
         sys.exit(status)
+
 elif args.build != False:
     # Ensure path exists
     if not os.path.exists(CMAKE_DIR):
@@ -103,9 +105,11 @@ elif args.build != False:
     if status != 0:
         print("CMake Failed")
         sys.exit(status)
-elif args.test:
+
+elif args.test != False:
     print("Test not implemented yet")
     sys.exit(1)
+
 elif args.clean:
     if os.path.exists(BASE_DIR + "/bin"):
         os.remove(BASE_DIR + "/bin") # Should be a symlink
@@ -113,6 +117,7 @@ elif args.clean:
         path = BASE_DIR + "/bin_" + l.lower()
         if os.path.exists(path):
             subprocess.call(["rm", "-r", path])
+
 else:
     print("No invocation specified. $ builder -h to see available options. Exit.")
     sys.exit(1)
