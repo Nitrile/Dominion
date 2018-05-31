@@ -54,6 +54,22 @@ test/        # Unit and Integration tests
 	server/
 ```
 
+Executable branches (see [Style](style.md)):
+
+* `client`(`$SC`)
+* `server`(`$SS`)
+* `viewer`(`$SV`)
+
+Library branches:
+
+* `Ele`(`$SL/Ele`) Game Elements
+* `GUI`(`$SL/GUI`) User interface and client graphics
+* `Gen`(`$SL/Gen`) World generation
+* `Net`(`$SL/Net`) Networking
+* `Rec`(`$SL/Rec`) Game saves
+* `Sim`(`$SL/Sim`) Simulation, Physics
+* `Sys`(`$SL/Sys`) System calls and platform dependent functionalities
+
 ## Builder
 
 The builder has several functionalities:
@@ -65,6 +81,7 @@ The builder has several functionalities:
 
 As an example, to configure the debug environment and build:
 ```
-$ builder -p -l Debug
-$ builder -b -l Debug
+$ builder -p
+$ builder -b
 ```
+Notice that the builder automatically adds in the debug flag `-l Debug`.
