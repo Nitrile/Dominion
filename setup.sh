@@ -4,7 +4,10 @@
 DEV=`dirname "$BASH_SOURCE"`
 export DEV=`realpath $DEV`
 export B=$DEV/build
-export C=$DEV/src
+export S=$DEV/src
+export SL=$DEV/src/lib
+export SC=$DEV/src/client
+export SS=$DEV/src/server
 export T=$DEV/test
 
 echo "Setting up development environment at $DEV"
