@@ -65,8 +65,8 @@ Library branches:
 * `Ele`(`$SL/Ele`) Game Elements
 * `GUI`(`$SL/GUI`) User interface and client graphics
 * `Gen`(`$SL/Gen`) World generation
+* `IO`(`$SL/IO`) Game saves
 * `Net`(`$SL/Net`) Networking
-* `Rec`(`$SL/Rec`) Game saves
 * `Sim`(`$SL/Sim`) Simulation, Physics
 * `Sys`(`$SL/Sys`) System calls and platform dependent functionalities
 

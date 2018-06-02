@@ -21,6 +21,18 @@ configuration:
 --pad-header
 --unpad-paren
 ```
+Always use tabs when changing the tab size does not destroy alignment.
+Otherwise, use spaces. This rule applies to all non-python code, including
+Haskell. e.g.
+```
+class Cl
+{
+	void func(int a,
+	          int b,
+	          int c,
+	         );
+};
+```
 
 ## Naming
 
@@ -41,8 +53,12 @@ In addition to the following branches, each library and executable (i.e.
 target) should have its own branch and maintains its own documentation and
 tests:
 
-* `master`: Main branch
+* `release`: Release branch
+* `master`: Main branch. Active development happens here but the head build
+	must always be buildable and executable.
 * `build`: Build system
 
-If you are working on an old branch, fast forward from `master` to avoid
-conflicts.
+If you are working on an old branch, merge with `--no-ff` from `master` to
+avoid later conflicts.
+
+Always use `--no-ff` when merging into development and release branches!
