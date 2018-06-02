@@ -47,6 +47,28 @@ When naming:
 	 lives in `namespace Net { ... }`.
 5. Libraries should have concise names.
 
+## Headers
+
+When importing headers/modules, use the style
+```C++
+// Example.cpp
+#include "Example.hpp" // Corresponding header always goes first
+
+#include <vector> // Headers from the standard library
+...
+
+#include <boost/thread/thread.hpp> // Headers from outside of the project
+...
+
+#include <IO/IO.hpp> // Headers from other libs inside the project
+...
+
+#include "Other.hpp" // Internal headers
+...
+
+// Source code begins
+```
+
 ## Branch
 
 In addition to the following branches, each library and executable (i.e.
