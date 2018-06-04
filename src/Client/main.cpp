@@ -2,6 +2,6 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Server!\n";
-	return EXIT_SUCCESS;
+	std::cout << "Client\n";
+	return 0;
 }

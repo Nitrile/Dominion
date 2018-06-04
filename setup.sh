@@ -1,14 +1,14 @@
 #!/bin/bash
 
-#SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
 DEV=`dirname "$BASH_SOURCE"`
 export DEV=`realpath $DEV`
 export B=$DEV/build
 export S=$DEV/src
-export SL=$DEV/src/lib
-export SC=$DEV/src/client
-export SS=$DEV/src/server
+export SC=$DEV/src/Client
+export SS=$DEV/src/Server
+export L=$DEV//lib
 export T=$DEV/test
+export BIN=$DEV/bin
 
 echo "Setting up development environment at $DEV"
 

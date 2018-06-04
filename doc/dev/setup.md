@@ -8,17 +8,18 @@ $ source setup.sh
 ```
 The following environment variables are defined:
 
-1. `$DEV`: Root
-2. `$B`: Builder
-3. `$S`: Source
-3. `$SL`: Library Source
-3. `$SC`: Client Source
-3. `$SS`: Server Source
-4. `$T`: Test
+* `$DEV`: Root
+* `$B`(`build/`): Builder
+* `$S`(`src/`): Executable Source
+* `$SC`(`src/Client`): Client Source
+* `$SS`(`src/Server`): Server Source
+* `$L`(`lib/`): Library Source
+* `$T`(`test/`): Test
+* `$BIN`(`bin/`): Output directory
 
 and we have the aliases:
 
-1. `builder`: Build script
+1. `builder`(`python $B/builder.py`): Build script
 
 	For help on its usage, execute `builder -h`.
 2. `client`: Client executable
@@ -44,10 +45,10 @@ bin_release/ # Release outputs
 	build/
 build/       # Make scripts
 src/         # Application source
-	lib/       # Libraries
-		[Library Name]/ # Individual library
-	client/    # Client code
-	server/    # Server code
+	Client/    # Client code
+	Server/    # Server code
+lib/         # Library source
+	[Library Name]/ # Individual library
 test/        # Unit and Integration tests
 	lib/
 	client/

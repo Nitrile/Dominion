@@ -41,11 +41,13 @@ When naming:
 1. All classes must be in CamelCase.
 2. If a `.hpp` or `.cpp` file contains a class and the class is the main
 	purpose of that file, the file name should match the class name exactly.
-3. Fields must have trailing underscores
-4. Libraries must live in their own namespaces. The name of the namespace
+3. If a file's name does not derive from a class, it must start with a lower
+	case letter. e.g. `$L/Net/net.hpp`
+4. Fields must have trailing underscores
+5. Libraries must live in their own namespaces. The name of the namespace
 	 should be (could be truncated) the library name. e.g. The library `Net`
 	 lives in `namespace Net { ... }`.
-5. Libraries should have concise names.
+6. Libraries should have concise names.
 
 ## Headers
 
