@@ -1,24 +1,9 @@
-#include "Network.hpp"
+#include "Net_Server.hpp"
 #include <iostream>
 #include <thread>
-#include <string>
-#include <memory>
-
-#ifdef LINUX
-	#include <sys/socket.h>
-	#include <sys/types.h>
-	#include <netinet/in.h>
-	#include <unistd.h>
-	#include <arpa/inet.h>
-#endif
 
 #define SERVER 0U
 #define CLIENT 4U
-
-#define min(a, b) ((a < b)?a:b)
-
-// For name conflict
-ssize_t socket_recv(int __fd, void* __buf, size_t __n, int __flags);
 
 Net_Server::Net_Server(type_func_login login, const unsigned int flag)
 {
@@ -95,37 +80,27 @@ void Net_Server::TCP_ACPT_thread(int acpt_socket, type_func_login login)
 		}
 	}
 }
+
 void Net_Server::TCP_RECV_thread(int conn_socket, type_func_login login)
 {
-	char* buf = (char*)malloc(64);
-	int n = 0;
-
-	n = socket_recv(conn_socket, buf, 64, 0);
-	buf[min(n, 63)] = '\0';
-
-	// check the format of the received message
-	if (n <= 4)
+	Msg log_m(this->TCP_recv_helper(conn_socket));
+	if (log_m._buf.get() == nullptr)
 	{
 		std::cout << "Net_Server:TCP:login:invalid login." << std::endl;
 		close(conn_socket);
-		free(buf);
 		return;
 	}
 
-	unsigned int user = *(unsigned int*) &(buf[0]);
-	std::string passwd(&buf[4], n - 4);
-
-	// check the password
+	unsigned int user = *(unsigned int*) log_m._buf.get();
+	std::string passwd(log_m._buf.get() + 4, log_m._size - 4);
 	if (!login(user, passwd))
 	{
 		std::cout << "Net_Server:TCP:login:wrong passwd, user " << user << std::endl;
 		close(conn_socket);
-		free(buf);
 		return;
 	}
-	// login successfully
-	std::cout << "Net_Server:TCP:login:login successful, user " << user << std::endl;
-	free(buf);
+
+    std::cout << "Net_Server:TCP:login:login successful, user " << user << std::endl;
 
 	// insert {user, conn_socket} to TCP_T,
 	// for use of send.
@@ -147,24 +122,11 @@ void Net_Server::TCP_RECV_thread(int conn_socket, type_func_login login)
 	// recv();
 	while (true)
 	{
-		// malloc the space
-		buf = (char*)malloc(4096);
-		// recv();
-		n = socket_recv(conn_socket, buf, 4096, 0);
-		if (n <= 0)
-		{
-			if (n == 0)
-			{
-				// TCP connection has closed
-				std::cout << "Net_Server:TCP:recv:closed, user " << user << std::endl;
-			}
-			else
-			{
-				std::cout << "Net_Server:TCP:recv:error, user " << user << ", " << errno << std::endl;
-			}
-			close(conn_socket);
-			free(buf);
-			// delete {user, conn_socket} in TCP_T if socket and user are paired
+        Msg m(this->TCP_recv_helper(conn_socket));
+        if(m._buf.get() == nullptr){
+            std::cout << "Net_Server:TCP:recv:error, user " << user << ", " << errno << std::endl;
+            close(conn_socket);
+            // delete {user, conn_socket} in TCP_T if socket and user are paired
 			(this->TCP_T_lock).lock();
 			if ((this->TCP_T).left.find(user)->second == conn_socket)
 			{
@@ -173,17 +135,10 @@ void Net_Server::TCP_RECV_thread(int conn_socket, type_func_login login)
 			(this->TCP_T_lock).unlock();
 			// exit thread
 			return;
-		}
+        }
 		else
 		{
-			// shrink to fit
-			buf = (char*)realloc(buf, n);
-
-			// create a new Msg
-			std::unique_ptr<char[], void(*)(void*)> p(buf, free);
-			Msg m(std::move(p), n, user);
-			buf = nullptr;
-
+			m._user = user;
 			// add it to queue
 			(this->recv_queue_lock).lock();
 			(this->recv_queue).push(std::move(m));

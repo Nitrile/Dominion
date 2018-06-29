@@ -1,13 +1,16 @@
-#include "Network.hpp"
-#include <netinet/in.h>
+#include "Addr.hpp"
 #include <memory.h>
+#ifdef LINUX
+	#include <netinet/in.h>
+#endif
 
-Network::Addr::Addr()
+
+Addr::Addr()
 {
 	memset(&(this->addr), 0, sizeof(sockaddr));
 }
 
-bool Network::Addr::operator<(const Addr& a)const
+bool Addr::operator<(const Addr& a)const
 {
 	return (memcmp(&(this->addr), &(a.addr), sizeof(sockaddr)) < 0);
 }

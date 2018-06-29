@@ -1,22 +1,11 @@
-#include "Network.hpp"
+#include "Net_Client.hpp"
 #include <iostream>
 #include <thread>
-#include <string>
-#include <memory>
-
 #ifdef LINUX
-	#include <sys/socket.h>
-	#include <sys/types.h>
-	#include <netinet/in.h>
-	#include <unistd.h>
 	#include <arpa/inet.h>
 #endif
-
 #define SERVER 0U
 #define CLIENT 4U
-
-// For name conflict
-ssize_t socket_recv(int __fd, void* __buf, size_t __n, int __flags);
 
 Net_Client::Net_Client(unsigned int user, std::string passwd, unsigned int flag)
 {
@@ -67,11 +56,11 @@ Net_Client::Net_Client(unsigned int user, std::string passwd, unsigned int flag)
 			return;
 		}
 
-		char* buf = (char*) malloc(passwd.length() + 5);
+		char* buf = (char*) malloc(passwd.length() + 4);
 		memcpy(buf, &user, 4);
-		memcpy(buf + 4, passwd.c_str(), passwd.length() + 1);
-		std::unique_ptr<char[], void(*)(void*)> p(buf, &free);
-		Msg m(std::move(p), passwd.length() + 5, 0);
+		memcpy(buf + 4, passwd.c_str(), passwd.length());
+		std::unique_ptr<char[], void(*)(void*)> p(buf, free);
+		Msg m(std::move(p), passwd.length() + 4, 0);
 		buf = nullptr;
 		send(std::move(m), TCP);
 	}
@@ -79,39 +68,18 @@ Net_Client::Net_Client(unsigned int user, std::string passwd, unsigned int flag)
 
 void Net_Client::TCP_RECV_thread(int conn_socket)
 {
-	int n = 0;
-	char* buf;
 	while (true)
 	{
-		// malloc the space
-		buf = (char*)malloc(4096);
-		// recv();
-		n = socket_recv(conn_socket, buf, 4096, 0);
-		if (n <= 0)
+		Msg m(this->TCP_recv_helper(conn_socket));
+		if (m._buf.get() == nullptr)
 		{
-			if (n == 0)
-			{
-				// TCP connection has closed
-				std::cout << "Net_Client:TCP:recv:closed." << std::endl;
-			}
-			else
-			{
-				std::cout << "Net_Client:TCP:recv:error." << std::endl;
-			}
+            std::cout << "Net_Client:TCP:recv:error." << std::endl;
 			close(conn_socket);
-			free(buf);
 			return;
 		}
 		else
 		{
-			// shrink to fit
-			buf = (char*)realloc(buf, n);
-
-			// create a new Msg
-			std::unique_ptr<char[], void(*)(void*)> p(buf, &free);
-			Msg m(std::move(p), n, 0);
-			buf = nullptr;
-
+			m._user = 0U;
 			// add it to queue
 			(this->recv_queue_lock).lock();
 			(this->recv_queue).push(std::move(m));
