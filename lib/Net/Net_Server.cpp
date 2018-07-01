@@ -1,4 +1,11 @@
 #include "Net_Server.hpp"
+#ifdef WINDOWS
+	#include <Winsock2.h>
+	#include <Ws2tcpip.h>
+#endif
+#ifdef LINUX
+	#include <arpa/inet.h>
+#endif
 #include <iostream>
 #include <thread>
 

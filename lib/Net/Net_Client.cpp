@@ -1,6 +1,10 @@
 #include "Net_Client.hpp"
 #include <iostream>
 #include <thread>
+#ifdef WINDOWS
+	#include <Winsock2.h>
+	#include <Ws2tcpip.h>
+#endif
 #ifdef LINUX
 	#include <arpa/inet.h>
 #endif

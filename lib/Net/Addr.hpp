@@ -1,5 +1,9 @@
 #pragma once
-#define LINUX
+
+#ifdef WINDOWS
+	#include <Winsock2.h>
+	#include <Ws2tcpip.h>
+#endif
 #ifdef LINUX
 	#include <netinet/in.h>
 #endif

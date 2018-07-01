@@ -5,6 +5,10 @@
 #include <memory>
 #include "Merge.hpp"
 
+#ifdef WINDOWS
+	#include <Winsock2.h>
+	#include <Ws2tcpip.h>
+#endif
 #ifdef LINUX
 	#include <sys/socket.h>
 	#include <sys/types.h>
