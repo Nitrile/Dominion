@@ -4,8 +4,8 @@
 #include <string>
 #include <memory>
 #include "Merge.hpp"
-
 #ifdef WINDOWS
+	#define close(sock) closesocket(sock)
 	#include <Winsock2.h>
 	#include <Ws2tcpip.h>
 #endif
@@ -20,11 +20,11 @@
 #define SERVER 0U
 #define CLIENT 4U
 
-inline ssize_t socket_send(int __fd, const void* __buf, size_t __n, int __flags)
+inline int socket_send(int __fd, const char* __buf, size_t __n, int __flags)
 {
 	return send(__fd, __buf, __n, __flags);
 }
-inline ssize_t socket_recv(int __fd, void* __buf, size_t __n, int __flags)
+inline int socket_recv(int __fd, char* __buf, size_t __n, int __flags)
 {
 	return recv(__fd, __buf, __n, __flags);
 }
@@ -70,8 +70,8 @@ __TCP:
 
 		// send Msg
 		unsigned int _size = m._size;
-		error_code = socket_send(send_socket, &_size, 4, 0);
-		error_code = socket_send(send_socket, &_arg2, 4, 0);
+		error_code = socket_send(send_socket, (char *) &_size, 4, 0);
+		error_code = socket_send(send_socket, (char *) &_arg2, 4, 0);
 		error_code = socket_send(send_socket, m._buf.get(), m._size, 0);
 		if (error_code == -1)
 		{

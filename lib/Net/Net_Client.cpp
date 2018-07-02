@@ -2,6 +2,7 @@
 #include <iostream>
 #include <thread>
 #ifdef WINDOWS
+	#define close(sock) closesocket(sock)
 	#include <Winsock2.h>
 	#include <Ws2tcpip.h>
 #endif

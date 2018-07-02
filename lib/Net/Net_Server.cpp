@@ -1,5 +1,6 @@
 #include "Net_Server.hpp"
 #ifdef WINDOWS
+	#define close(sock) closesocket(sock)
 	#include <Winsock2.h>
 	#include <Ws2tcpip.h>
 #endif
