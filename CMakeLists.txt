@@ -1,9 +1,12 @@
 project(Dominion)
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.8)
 
 set(PROJECT_SOURCE_DIR     ${CMAKE_SOURCE_DIR}/src)
 set(PROJECT_LIB_DIR        ${CMAKE_SOURCE_DIR}/lib)
 set(PROJECT_TEST_DIR       ${CMAKE_SOURCE_DIR}/test)
+set(PROJECT_BUILD_DIR      ${CMAKE_SOURCE_DIR}/build)
+
+add_subdirectory(${PROJECT_BUILD_DIR})
 
 # Build paths
 

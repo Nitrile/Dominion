@@ -1,15 +1,14 @@
 
-project(Net)
+project(IO)
 
 set(sources
-	net.cpp
+	save.cpp
 	)
-
 set(headers
-	net.hpp
+	save.hpp
 	)
 
-Dominion_Library(TARGET Net
+Dominion_Library(TARGET IO
 	SOURCES ${sources}
 	HEADERS ${headers}
 )

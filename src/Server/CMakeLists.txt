@@ -1,11 +1,10 @@
 project(Server)
 
-set(source
+set(sources
 	main.cpp
 	)
 
-add_executable(Server ${source})
-target_include_directories(Server PRIVATE ${PROJECT_LIB_DIR})
-
-# Link library dependencies
-target_link_libraries(Server PRIVATE Net)
+Dominion_Executable(TARGET Server
+	SOURCES ${sources}
+	DEPENDS Net
+)
