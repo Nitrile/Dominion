@@ -5,12 +5,35 @@ include(CMakeParseArguments)
 #
 # Example:
 #
-# Dominion_Library(TARGET IO
+# Builder_Library(TARGET IO
 #                  HEADERS save.hpp
 #                  SOURCES save.cpp
+#                  DEPENDS ...
 #                 )
 #
-function(Dominion_Library)
+
+macro(Builder_EnsureNonempty ${TARGET})
+	if (TARGET)
+	elseif()
+		message(FATAL_ERROR Target is empty: ${TARGET})
+	endif()
+endmacro()
+
+function(Builder_Link TARGET DEPENDS)
+	Builder_EnsureNonempty(${TARGET})
+
+	if (DEPENDS)
+		add_dependencies(${TARGET} ${DEPENDS})
+		target_link_libraries(${TARGET} ${DEPENDS})
+		foreach (dependency ${DEPENDS})
+			target_include_directories(${TARGET}
+				PUBLIC $<TARGET_PROPERTY:${dependency},INTERFACE_INCLUDE_DIRECTORIES>
+			)
+		endforeach ()
+	endif()
+endfunction()
+
+function(Builder_Library)
 	set(arg_oneval TARGET)
 	set(arg_mutlival HEADERS SOURCES DEPENDS)
 	cmake_parse_arguments(Lib
@@ -24,20 +47,9 @@ function(Dominion_Library)
 		SHARED ${Lib_SOURCES}
 	)
 
-	if (Lib_DEPENDS)
-		add_dependencies(${Lib_TARGET} ${Lib_DEPENDS})
-		target_link_libraries(${Lib_TARGET} ${Lib_DEPENDS})
-		foreach (TARGET ${Lib_DEPENDS})
-			target_include_directories(${Lib_TARGET}
-				PUBLIC $<TARGET_PROPERTY:${TARGET},INTERFACE_INCLUDE_DIRECTORIES>
-			)
-		endforeach ()
-	endif()
-	get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+	Builder_Link(${Lib_TARGET} "${Lib_DEPENDS}")
 
-	message(Lib: ${Lib_TARGET})
-	message(Interface: ${PARENT_DIR})
-	message(Private: ${CMAKE_CURRENT_SOURCE_DIR})
+	get_filename_component(PARENT_DIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
 	target_include_directories(${Lib_TARGET}
 		INTERFACE ${PARENT_DIR}
@@ -46,7 +58,7 @@ function(Dominion_Library)
 
 endfunction()
 
-function(Dominion_Executable)
+function(Builder_Executable)
 	set(arg_oneval TARGET)
 	set(arg_mutlival SOURCES DEPENDS)
 	cmake_parse_arguments(Exe
@@ -59,14 +71,30 @@ function(Dominion_Executable)
 		${Exe_SOURCES}
 	)
 
-	if (Exe_DEPENDS)
-		add_dependencies(${Exe_TARGET} ${Exe_DEPENDS})
-		target_link_libraries(${Exe_TARGET} ${Exe_DEPENDS})
-		# At the moment this
-		foreach (TARGET ${Exe_DEPENDS})
-			target_include_directories(${Exe_TARGET}
-				PUBLIC $<TARGET_PROPERTY:${TARGET},INTERFACE_INCLUDE_DIRECTORIES>
-			)
-		endforeach ()
-	endif()
+	Builder_Link(${Exe_TARGET} "${Exe_DEPENDS}")
+endfunction()
+
+function(Builder_Test)
+	set(arg_oneval NAME)
+	set(arg_mutlival SOURCES DEPENDS)
+	cmake_parse_arguments(Exe
+		""
+		"${arg_oneval}"
+		"${arg_mutlival}"
+		${ARGN})
+
+	set(targetname "Test_${Exe_NAME}")
+
+	add_executable(${targetname}
+		${Exe_SOURCES}
+	)
+	add_test(${targetname}
+		${TEST_OUTPUT_PATH}/${targetname}
+	)
+
+	set_target_properties(${targetname}
+		PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${TEST_OUTPUT_PATH}
+	)
+
+	Builder_Link(${targetname} "${Exe_DEPENDS}")
 endfunction()

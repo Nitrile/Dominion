@@ -9,7 +9,7 @@ set(headers
 	net.hpp
 	)
 
-Dominion_Library(TARGET Net
+Builder_Library(TARGET Net
 	SOURCES ${sources}
 	HEADERS ${headers}
 )

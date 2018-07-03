@@ -107,8 +107,24 @@ elif args.build != False:
         sys.exit(status)
 
 elif args.test != False:
-    print("Test not implemented yet")
-    sys.exit(1)
+    if not os.path.exists(CMAKE_DIR):
+        print("CMake build directory does not exist.\n"
+              "Please configure project.\n"
+             )
+        sys.exit(1)
+    os.chdir(CMAKE_DIR)
+
+    # Form the command
+    command = ["ctest"]
+    if args.test != []:
+        command += ["-R"] + args.test
+    print("Testing... $ " + str(command))
+
+    # Call cmake
+    status = subprocess.call(command)
+    if status != 0:
+        print("Testing Failed")
+        sys.exit(status)
 
 elif args.clean:
     if os.path.exists(BASE_DIR + "/bin"):

@@ -8,7 +8,7 @@ set(headers
 	save.hpp
 	)
 
-Dominion_Library(TARGET IO
+Builder_Library(TARGET IO
 	SOURCES ${sources}
 	HEADERS ${headers}
 )

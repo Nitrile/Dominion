@@ -4,7 +4,7 @@ set(sources
 	main.cpp
 	)
 
-Dominion_Executable(TARGET Server
+Builder_Executable(TARGET Server
 	SOURCES ${sources}
 	DEPENDS Net
 )
