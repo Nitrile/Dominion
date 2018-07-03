@@ -1,15 +1,14 @@
 
-project(Net)
+project(IO)
 
 set(sources
-	net.cpp
+	save.cpp
 	)
-
 set(headers
-	net.hpp
+	save.hpp
 	)
 
-Builder_Library(TARGET Net
+Builder_Library(TARGET IO
 	SOURCES ${sources}
 	HEADERS ${headers}
 )

@@ -1,3 +1,3 @@
+# Tests
 
-# Nothing here yet
-message("Place test here")
+add_subdirectory(IO)

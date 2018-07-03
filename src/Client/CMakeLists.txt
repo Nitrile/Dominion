@@ -3,5 +3,7 @@ set(sources
 	main.cpp
 	)
 
-add_executable(Client ${sources})
-
+Builder_Executable(TARGET Client
+	SOURCES ${sources}
+	DEPENDS Net
+)
